@@ -21,4 +21,4 @@ WORKDIR /app/publish
 EXPOSE 8080
 
 # Configurar o comando de execução da aplicação
-ENTRYPOINT ["dotnet", "NomeDoSeuProjeto.dll"]
+ENTRYPOINT ["dotnet", "RPG API.dll"]
