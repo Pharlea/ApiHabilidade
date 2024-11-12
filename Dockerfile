@@ -1,26 +1,24 @@
-# Use a imagem base ASP.NET Core
+# Usar a imagem base do SDK .NET 8.0 para desenvolvimento e execução em um único estágio
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 80
 
-# Use a imagem SDK para build
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-# Ajuste o caminho do .csproj para o que você encontrou no repositório
-COPY ["apiHabilidade/RPG_API.csproj", "RPG_API/"]
-RUN dotnet restore "RPG_API/RPG_API.csproj"
+# Definir o diretório de trabalho dentro do contêiner
+WORKDIR /app
+
+# Copiar o arquivo de projeto e restaurar as dependências
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copiar o restante dos arquivos da aplicação
 COPY . .
-WORKDIR "/src/RPG_API"
-RUN dotnet build "RPG_API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Publica a aplicação para o estágio final
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "RPG_API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# Publicar a aplicação
+RUN dotnet publish -c Release -o /app/publish
 
-# Imagem final para produção
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "RPG_API.dll"]
+# Definir o diretório de trabalho para a pasta publicada
+WORKDIR /app/publish
+
+# Expor a porta 8080 para o contêiner
+EXPOSE 8080
+
+# Configurar o comando de execução da aplicação
+ENTRYPOINT ["dotnet", "NomeDoSeuProjeto.dll"]
