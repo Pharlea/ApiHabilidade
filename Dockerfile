@@ -1,29 +1,26 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
+# Use a imagem base ASP.NET Core
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
 WORKDIR /app
 EXPOSE 80
 
-
-# This stage is used to build the service project
+# Use a imagem SDK para build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["RPG API/RPG API.csproj", "RPG API/"]
-RUN dotnet restore "./RPG API/RPG API.csproj"
+# Ajuste o caminho abaixo para que corresponda ao caminho correto do seu .csproj no GitHub
+COPY ["RPG_API/RPG_API.csproj", "RPG_API/"]
+RUN dotnet restore "RPG_API/RPG_API.csproj"
 COPY . .
-WORKDIR "/src/RPG API"
-RUN dotnet build "./RPG API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/RPG_API"
+RUN dotnet build "RPG_API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# This stage is used to publish the service project to be copied to the final stage
+# Publica a aplicação para o estágio final
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./RPG API.csproj.user" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "RPG_API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+# Imagem final
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "RPG API.dll"]
+ENTRYPOINT ["dotnet", "RPG_API.dll"]
