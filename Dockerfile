@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 # Ajuste o caminho abaixo para que corresponda ao caminho correto do seu .csproj no GitHub
-COPY ["RPG_API/RPG_API.csproj", "RPG_API/"]
+COPY [apiHabilidade/RPG API.csproj, "RPG_API/"]
 RUN dotnet restore "RPG_API/RPG_API.csproj"
 COPY . .
 WORKDIR "/src/RPG_API"
