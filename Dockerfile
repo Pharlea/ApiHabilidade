@@ -7,8 +7,8 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-# Ajuste o caminho abaixo para que corresponda ao caminho correto do seu .csproj no GitHub
-COPY [apiHabilidade/RPG API.csproj, "RPG_API/"]
+# Ajuste o caminho do .csproj para o que você encontrou no repositório
+COPY ["apiHabilidade/RPG_API.csproj", "RPG_API/"]
 RUN dotnet restore "RPG_API/RPG_API.csproj"
 COPY . .
 WORKDIR "/src/RPG_API"
@@ -19,7 +19,7 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "RPG_API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Imagem final
+# Imagem final para produção
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
