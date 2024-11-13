@@ -4,6 +4,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 # Definir o diretório de trabalho dentro do contêiner
 WORKDIR /app
 
+# Copiar o arquivo de projeto e restaurar as dependências
+COPY *.csproj ./
+RUN dotnet restore
+
 # Copiar o restante dos arquivos da aplicação
 COPY . .
 
